@@ -8,8 +8,14 @@ router.get('/', auth, adminOnly, async (req, res) => {
   try {
     const { role, department } = req.query;
     let query = {};
+    
     if (role) query.role = role;
     if (department) query.department = department;
+    
+    // Admin can only see students from their field
+    if (req.user.role === 'admin' && role === 'student') {
+      query.department = req.user.field;
+    }
     
     const users = await User.find(query).sort({ createdAt: -1 });
     res.json({ success: true, users: users });

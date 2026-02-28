@@ -72,7 +72,7 @@ const Layout = ({ children }) => {
       </nav>
 
       <div className="p-4 border-t border-gray-700">
-        <div className="flex items-center cursor-pointer" onClick={() => navigate(user?.role === 'student' ? '/student/profile' : user?.role === 'superadmin' ? '/superadmin' : '/admin')}>
+        <div className="flex items-center cursor-pointer" onClick={() => navigate(user?.role === 'student' ? '/student/profile' : user?.role === 'superadmin' ? '/superadmin' : '/admin/profile')}>
           <div className="flex-shrink-0">
             <div className="h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center">
               <User className="h-4 w-4 text-white" />

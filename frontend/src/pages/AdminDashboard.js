@@ -16,6 +16,7 @@ import AdminActivities from './AdminActivities';
 import AdminAchievements from './AdminAchievements';
 import AdminStudents from './AdminStudents';
 import AdminTeachers from './AdminTeachers';
+import Profile from './Profile';
 
 const AdminOverview = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -247,6 +248,7 @@ const AdminDashboard = () => {
       <Route path="/activities" element={<AdminActivities />} />
       <Route path="/achievements" element={<AdminAchievements />} />
       <Route path="/students" element={<AdminStudents />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   );
 };

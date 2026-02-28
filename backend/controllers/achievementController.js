@@ -27,11 +27,19 @@ const getAchievements = async (req, res) => {
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
-    const total = await Achievement.countDocuments(query);
+    // Filter achievements by admin's field
+    let filteredAchievements = achievements;
+    if (req.user.role === 'admin') {
+      filteredAchievements = achievements.filter(ach => 
+        ach.student && ach.student.department === req.user.field
+      );
+    }
+
+    const total = req.user.role === 'admin' ? filteredAchievements.length : await Achievement.countDocuments(query);
 
     res.json({
       success: true,
-      achievements: achievements,
+      achievements: filteredAchievements,
       pagination: {
         current: page,
         pages: Math.ceil(total / limit),

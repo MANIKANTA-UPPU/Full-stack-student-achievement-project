@@ -11,6 +11,7 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     department: user?.department || '',
+    field: user?.field || '',
     year: user?.year || '',
     skills: user?.skills?.join(', ') || '',
     interests: user?.interests?.join(', ') || '',
@@ -23,12 +24,17 @@ const Profile = () => {
     try {
       const updateData = {
         name: formData.name,
-        department: formData.department,
-        year: formData.year,
         skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
         interests: formData.interests.split(',').map(i => i.trim()).filter(i => i),
         profileImage: formData.profileImage
       };
+      
+      if (user?.role === 'student') {
+        updateData.department = formData.department;
+        updateData.year = formData.year;
+      } else if (user?.role === 'admin') {
+        updateData.field = formData.field;
+      }
       
       const response = await authAPI.updateProfile(updateData);
       updateUser(response.data.user);
@@ -45,6 +51,7 @@ const Profile = () => {
     setFormData({
       name: user?.name || '',
       department: user?.department || '',
+      field: user?.field || '',
       year: user?.year || '',
       skills: user?.skills?.join(', ') || '',
       interests: user?.interests?.join(', ') || '',
@@ -134,39 +141,62 @@ const Profile = () => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                    <select
-                      required
-                      value={formData.department}
-                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    >
-                      <option value="">Select Department</option>
-                      <option value="Computer Science">Computer Science</option>
-                      <option value="Mechanical">Mechanical</option>
-                      <option value="Electrical">Electrical</option>
-                      <option value="Civil">Civil</option>
-                      <option value="Electronics">Electronics</option>
-                      <option value="Chemical">Chemical</option>
-                    </select>
-                  </div>
+                  {user?.role === 'student' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                        <select
+                          required
+                          value={formData.department}
+                          onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        >
+                          <option value="">Select Department</option>
+                          <option value="Computer Science">Computer Science</option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Electrical">Electrical</option>
+                          <option value="Civil">Civil</option>
+                          <option value="Electronics">Electronics</option>
+                          <option value="Chemical">Chemical</option>
+                        </select>
+                      </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
-                    <select
-                      required
-                      value={formData.year}
-                      onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    >
-                      <option value="">Select Year</option>
-                      <option value="1">1st Year</option>
-                      <option value="2">2nd Year</option>
-                      <option value="3">3rd Year</option>
-                      <option value="4">4th Year</option>
-                    </select>
-                  </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                        <select
+                          required
+                          value={formData.year}
+                          onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        >
+                          <option value="">Select Year</option>
+                          <option value="1">1st Year</option>
+                          <option value="2">2nd Year</option>
+                          <option value="3">3rd Year</option>
+                          <option value="4">4th Year</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {user?.role === 'admin' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Field</label>
+                      <select
+                        required
+                        value={formData.field}
+                        onChange={(e) => setFormData({ ...formData, field: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      >
+                        <option value="">Select Field</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Social Service">Social Service</option>
+                        <option value="Academic">Academic</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -230,18 +260,20 @@ const Profile = () => {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex items-center gap-2 text-gray-600 mb-2">
                       <BookOpen className="w-5 h-5" />
-                      <span className="font-medium">Department</span>
+                      <span className="font-medium">{user?.role === 'student' ? 'Department' : 'Field'}</span>
                     </div>
-                    <p className="text-gray-900">{user?.department || 'Not specified'}</p>
+                    <p className="text-gray-900">{user?.role === 'student' ? (user?.department || 'Not specified') : (user?.field || 'Not specified')}</p>
                   </div>
 
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center gap-2 text-gray-600 mb-2">
-                      <Calendar className="w-5 h-5" />
-                      <span className="font-medium">Year</span>
+                  {user?.role === 'student' && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 text-gray-600 mb-2">
+                        <Calendar className="w-5 h-5" />
+                        <span className="font-medium">Year</span>
+                      </div>
+                      <p className="text-gray-900">{user?.year ? `${user.year}${['st', 'nd', 'rd', 'th'][user.year - 1] || 'th'} Year` : 'Not specified'}</p>
                     </div>
-                    <p className="text-gray-900">{user?.year ? `${user.year}${['st', 'nd', 'rd', 'th'][user.year - 1] || 'th'} Year` : 'Not specified'}</p>
-                  </div>
+                  )}
                 </div>
 
                 {user?.skills && user.skills.length > 0 && (
